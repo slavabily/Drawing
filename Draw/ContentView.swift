@@ -36,21 +36,23 @@ struct Arrow: Shape {
         
         path.addPath(rectanglePositioned)
 
-        let finalPosition = CGAffineTransform(translationX: 0, y: -(rect.height / 2))
-        
-        path = path.applying(finalPosition)
-
         return path
     }
 }
 
 struct ContentView: View {
+    @State private var lineWidth: CGFloat = 20
      
     var body: some View {
         VStack {
             Arrow()
-                .fill(Color.blue)
+                .stroke(Color.blue, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
                 .frame(width: 200, height: 200)
+            
+            Spacer(minLength: 50)
+            
+            Slider(value: $lineWidth, in: 1...40)
+                .padding(.bottom)
         }
     }
 }
