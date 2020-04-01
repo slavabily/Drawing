@@ -31,6 +31,13 @@ struct Arrow: Shape {
 }
 
 struct ColorCyclingRectangle: View {
+    var positions: [UnitPoint]
+    var startPoint: Int
+    
+    var unitPoint: UnitPoint {
+        return positions[startPoint]
+    }
+    
     var amount = 0.0
     var steps = 100
     
@@ -42,7 +49,7 @@ struct ColorCyclingRectangle: View {
                     .strokeBorder(LinearGradient(gradient: Gradient(colors: [
                         self.color(for: value, brightness: 1),
                         self.color(for: value, brightness: 0.5)
-                    ]), startPoint: .top, endPoint: .bottom),  lineWidth: 2)
+                    ]), startPoint: self.unitPoint, endPoint: .zero),  lineWidth: 2)
             }
         }
         .drawingGroup()
@@ -59,28 +66,40 @@ struct ColorCyclingRectangle: View {
 
 struct ContentView: View {
     @State private var lineWidth: CGFloat = 20
+    
     @State private var colorcycle = 0.0
-     
+    @State private var startPoint = 0
+    var positions: [UnitPoint] = [.top, .bottom]
+    var positionNames = ["Top", "Bottom"]
+    var joo: UnitPoint {
+        return positions[startPoint]
+    }
+       
     var body: some View {
         VStack {
             Arrow()
                 .stroke(Color.blue, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
                 .frame(width: 100, height: 100)
             
-            Spacer(minLength: 50)
+            Spacer()
             
+            Text("Line width")
             Slider(value: $lineWidth, in: 1...40)
                 .padding(.bottom)
             
-            Spacer(minLength: 50)
-            
-            ColorCyclingRectangle(amount: self.colorcycle)
+            ColorCyclingRectangle(positions: self.positions, startPoint: self.startPoint, amount: self.colorcycle)
                 .frame(width: 200, height: 200)
             
-            Spacer(minLength: 50)
-            
+            Text("Color cycling")
+                .padding(.top)
             Slider(value: $colorcycle)
-                .padding(.bottom)
+ 
+            Picker(selection: $startPoint, label: Text("Gradient position")) {
+                ForEach(0..<self.positions.count) {
+                    Text(self.positionNames[$0])
+                }
+            }
+            .padding([.leading])
         }
     }
 }
